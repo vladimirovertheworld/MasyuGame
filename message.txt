@@ -1,6 +1,1 @@
-✅ Masyu grid drawn using canvas
-✅ Clickable cells to draw paths
-✅ Handles black & white circle rules
-✅ Allows undo, reset, and validation
-✅ Hints and next puzzle support
-✅ Looks like the example UI!
+new README.md
