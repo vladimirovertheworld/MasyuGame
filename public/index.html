@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masyu Puzzle Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Masyu Puzzle</h1>
+    <p>Draw a single loop passing through all circles according to the Masyu rules.</p>
+
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <div id="controls">
+        <button onclick="undoMove()">Undo</button>
+        <button onclick="resetGame()">Reset</button>
+        <button onclick="validatePuzzle()">Check</button>
+        <button onclick="nextPuzzle()">Next Puzzle</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

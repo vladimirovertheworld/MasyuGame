@@ -1,0 +1,12 @@
+[
+    {
+        "size": 6,
+        "black": [{ "r": 1, "c": 2 }, { "r": 3, "c": 4 }],
+        "white": [{ "r": 1, "c": 4 }, { "r": 2, "c": 2 }],
+        "solution": [
+            { "r": 1, "c": 2, "type": "horizontal" },
+            { "r": 2, "c": 2, "type": "vertical" },
+            { "r": 3, "c": 4, "type": "horizontal" }
+        ]
+    }
+]

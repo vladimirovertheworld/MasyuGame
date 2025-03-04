@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masyu Puzzle</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="hint-overlay">
+        <div id="hint-box">
+            <h2>Welcome to Masyu Puzzle!</h2>
+            <p><strong>Rules:</strong></p>
+            <ul>
+                <li><b>White Circles:</b> Path must go straight but must turn before or after.</li>
+                <li><b>Black Circles:</b> Path must turn in the circle and go straight before & after.</li>
+                <li>Connect lines to form a **single loop**.</li>
+            </ul>
+            <button onclick="closeHint()">Got it!</button>
+        </div>
+    </div>
+
+    <h1>Masyu Puzzle Game</h1>
+    <div id="puzzle-container"></div>
+    <button onclick="validatePuzzle()">Check Solution</button>
+    <button onclick="loadNextPuzzle()">Next Puzzle</button>
+    <script src="script.js"></script>
+</body>
+</html>

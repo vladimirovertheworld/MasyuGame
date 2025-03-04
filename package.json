@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "express": "^4.21.2",
+    "ws": "^8.18.1"
+  },
+  "name": "masyugame",
+  "version": "1.0.0",
+  "description": "## Overview This is an interactive web-based implementation of the **Masyu Puzzle** game. Masyu is a logic puzzle where players must draw a single continuous loop through a grid, following specific rules dictated by black and white circles placed in some of the cells.",
+  "main": "maingame.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

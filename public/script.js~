@@ -1,0 +1,183 @@
+let puzzleIndex = 0;
+let gridSize = 6;
+let horizontalLines = [];
+let verticalLines = [];
+let correctMoves = [];
+
+// Check if first-time user (show tutorial)
+window.onload = () => {
+    if (!localStorage.getItem("first_time")) {
+        document.getElementById("hint-overlay").style.display = "flex";
+        localStorage.setItem("first_time", "no");
+    }
+};
+
+// Close hint overlay
+function closeHint() {
+    document.getElementById("hint-overlay").style.display = "none";
+}
+
+// Load puzzle from the server
+async function loadPuzzle(index) {
+    const response = await fetch(`/puzzle/${index}`);
+    if (!response.ok) {
+        alert("Puzzle not found!");
+        return;
+    }
+
+    const puzzle = await response.json();
+    gridSize = puzzle.size;
+    
+    // Reset game state
+    horizontalLines = Array.from({ length: gridSize }, () => Array(gridSize - 1).fill(0));
+    verticalLines = Array.from({ length: gridSize - 1 }, () => Array(gridSize).fill(0));
+    correctMoves = puzzle.solution || [];
+
+    // Create grid
+    const puzzleContainer = document.getElementById("puzzle-container");
+    puzzleContainer.innerHTML = "";
+    puzzleContainer.style.gridTemplateColumns = `repeat(${gridSize}, 50px)`;
+
+    for (let r = 0; r < gridSize; r++) {
+        for (let c = 0; c < gridSize; c++) {
+            const cell = document.createElement("div");
+            cell.className = "cell";
+            cell.dataset.row = r;
+            cell.dataset.col = c;
+
+            if (puzzle.black.some(p => p.r === r && p.c === c)) {
+                const circle = document.createElement("div");
+                circle.classList.add("circle", "black");
+                cell.appendChild(circle);
+            } else if (puzzle.white.some(p => p.r === r && p.c === c)) {
+                const circle = document.createElement("div");
+                circle.classList.add("circle", "white");
+                cell.appendChild(circle);
+            }
+
+            cell.addEventListener("mouseover", () => highlightHints(r, c));
+            cell.addEventListener("click", () => toggleEdge(r, c));
+            puzzleContainer.appendChild(cell);
+        }
+    }
+}
+
+// Highlight correct move hints
+function highlightHints(row, col) {
+    document.querySelectorAll(".hint").forEach(e => e.remove());
+
+    correctMoves.forEach(move => {
+        if (move.r === row && move.c === col) {
+            highlightEdge(move.r, move.c, move.type, "hint");
+        }
+    });
+}
+
+// Toggle edges when clicked
+function toggleEdge(row, col) {
+    const directions = [
+        { dr: 0, dc: 1, type: "horizontal" }, // Right
+        { dr: 1, dc: 0, type: "vertical" } // Down
+    ];
+
+    for (const { dr, dc, type } of directions) {
+        const nr = row + dr, nc = col + dc;
+        if (nr < gridSize && nc < gridSize) {
+            if (type === "horizontal") {
+                horizontalLines[row][col] = 1 - horizontalLines[row][col];
+            } else {
+                verticalLines[row][col] = 1 - verticalLines[row][col];
+            }
+            updateDisplay();
+            checkCorrectMove(row, col, type);
+            return;
+        }
+    }
+}
+
+// Check if the move is correct
+function checkCorrectMove(row, col, type) {
+    const correct = correctMoves.some(move => move.r === row && move.c === col && move.type === type);
+    
+    if (correct) {
+        document.querySelectorAll(".edge").forEach(edge => {
+            if (edge.dataset.row == row && edge.dataset.col == col && edge.dataset.type == type) {
+                edge.style.backgroundColor = "green"; // Correct move
+            }
+        });
+    } else {
+        alert("Incorrect move! Try again.");
+        toggleEdge(row, col); // Undo the incorrect move
+    }
+
+    if (isPuzzleSolved()) {
+        alert("Puzzle solved! 🎉");
+    }
+}
+
+// Update the displayed lines
+function updateDisplay() {
+    document.querySelectorAll(".edge").forEach(e => e.remove());
+
+    for (let r = 0; r < gridSize; r++) {
+        for (let c = 0; c < gridSize - 1; c++) {
+            if (horizontalLines[r][c]) {
+                createEdge("horizontal", r, c);
+            }
+        }
+    }
+
+    for (let r = 0; r < gridSize - 1; r++) {
+        for (let c = 0; c < gridSize; c++) {
+            if (verticalLines[r][c]) {
+                createEdge("vertical", r, c);
+            }
+        }
+    }
+}
+
+// Create a visible edge
+function createEdge(type, row, col, hint = false) {
+    const edge = document.createElement("div");
+    edge.className = `edge ${type} ${hint ? "hint" : ""}`;
+    edge.dataset.row = row;
+    edge.dataset.col = col;
+    edge.dataset.type = type;
+    edge.style.position = "absolute";
+    edge.style.backgroundColor = hint ? "yellow" : "black";
+    edge.style.zIndex = "5";
+
+    if (type === "horizontal") {
+        edge.style.width = "50px";
+        edge.style.height = "5px";
+        edge.style.top = `${row * 50 + 25}px`;
+        edge.style.left = `${col * 50}px`;
+    } else {
+        edge.style.width = "5px";
+        edge.style.height = "50px";
+        edge.style.top = `${row * 50}px`;
+        edge.style.left = `${col * 50 + 25}px`;
+    }
+
+    document.getElementById("puzzle-container").appendChild(edge);
+}
+
+// Check if the puzzle is solved
+function isPuzzleSolved() {
+    return correctMoves.every(move => {
+        if (move.type === "horizontal") {
+            return horizontalLines[move.r][move.c] === 1;
+        } else {
+            return verticalLines[move.r][move.c] === 1;
+        }
+    });
+}
+
+// Load next puzzle
+function loadNextPuzzle() {
+    puzzleIndex = (puzzleIndex + 1) % 3;
+    loadPuzzle(puzzleIndex);
+}
+
+// Load the first puzzle
+loadPuzzle(0);
